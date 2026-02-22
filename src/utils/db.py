@@ -1,15 +1,20 @@
 import psycopg2
 from dotenv import load_dotenv
 import os
-from logger import get_logger
+from utils.logger import get_logger
 
+# create logger object
 logger = get_logger(__name__)
+# read environment variables from .env file
 load_dotenv() 
 
 
 def get_postgres_connection():
+    """
+    return connection object to postgres default database
+    """
+    # try connecting to postgres default database
     try:
-
         conn = psycopg2.connect(host = os.getenv("DB_HOST"),
                                 user = os.getenv("DB_USER"),
                                 password = os.getenv("DB_PASSWORD"),
@@ -18,10 +23,15 @@ def get_postgres_connection():
         logger.info("Connecting To postgres Database Sucessfully")
         return conn
     except Exception as e:
+    # inform if connection fails
         logger.error(f"Connection failed: {e}")
         raise
     
 def get_animedw_connection():
+    """
+    return connection object to animedw database
+    """
+    # try connecting to animedw database
     try:
         conn = psycopg2.connect(host = os.getenv("DB_HOST"),
                                 user = os.getenv("DB_USER"),
@@ -31,6 +41,7 @@ def get_animedw_connection():
         logger.info("Connecting To animedw Database Sucessfully")
         return conn
     except Exception as e:
+    # inform if connection fails
         logger.error(f"Connection failed: {e}")
         raise
 if __name__ == "__main__":

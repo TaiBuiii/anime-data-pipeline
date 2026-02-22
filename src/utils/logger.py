@@ -15,7 +15,7 @@ def get_logger(name : str) -> logging.Logger:
     # Config logger if not already exists
     if not logger.handlers:
         # create handler object
-        handler = logging.FileHandler(LOG_FILE, mode = "w")
+        handler = logging.FileHandler(LOG_FILE, mode = "a")
         # create formatter object
         formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
         # set format for the handler
