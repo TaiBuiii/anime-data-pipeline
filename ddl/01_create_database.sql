@@ -1,1 +1,2 @@
 DROP DATABASE IF EXISTS animedw;
+CREATE DATABASE animedw;
