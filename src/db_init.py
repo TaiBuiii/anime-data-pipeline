@@ -29,7 +29,8 @@ def execute_sql_file(file: Path, conn: psycopg2.connection) -> None:
     """
     try:
         logger.info(f"Executing {file.name}")
-
+        
+        # read sql file
         with conn.cursor() as cursor:
             with open(file, "r") as f:
                 sql = f.read()

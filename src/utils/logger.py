@@ -1,8 +1,10 @@
 import logging
 import os
+from pathlib import Path
 
-LOG_FILE = "logs/pipeline.log"
-os.makedirs("logs", exist_ok= True)
+LOG_DIR = Path(__file__).resolve().parent.parent / "logs"
+LOG_FILE = LOG_DIR / "pipeline.log"
+os.makedirs(LOG_DIR, exist_ok=True)
 
 def get_logger(name : str) -> logging.Logger:
     """
