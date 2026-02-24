@@ -1,4 +1,5 @@
 import psycopg2
+from sqlalchemy import create_engine
 from dotenv import load_dotenv
 import os
 from utils.logger import get_logger
@@ -44,10 +45,19 @@ def get_animedw_connection():
     # inform if connection fails
         logger.error(f"Connection failed: {e}")
         raise
-if __name__ == "__main__":
-    conn = get_postgres_connection()
-    cur = conn.cursor()
-    cur.execute("SELECT 1;")
-    print(cur.fetchone())
-    cur.close()
-    conn.close()
+
+def get_sqlalchemy_engine():
+    try:
+        host = os.getenv("DB_HOST")
+        user = os.getenv("DB_USER")
+        password = os.getenv("DB_PASSWORD")
+        dbname = "animedw"
+        port = int(os.getenv("DB_PORT",5432))
+        conn_str = f"postgresql://{user}:{password}@{host}:{port}/{dbname}"
+        engine = create_engine(conn_str)
+        logger.info ("Connecting to animedw Database using Alchemy successfully")
+        return engine
+    except Exception as e:
+        logger.info(f"Error occured: {e}")
+        
+

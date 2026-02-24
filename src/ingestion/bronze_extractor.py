@@ -14,7 +14,7 @@ def extract_pagination(data : dict) -> list:
         data["items"]["total"],
         data["items"]["per_page"],
     )]
-
+        
 def extract_anime_raw(data : list, page : int) -> list:
     """
     This function is called by run_ingestion() to extract all the records,

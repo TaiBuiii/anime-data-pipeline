@@ -8,7 +8,7 @@ import json
 logger = get_logger(__name__)
 
     
-def run_ingestion(startPage : int = 1):
+def run_ingestion(startPage : int = 1) -> None:
     """
     Acts as the orchestration for the extraction phase. It calls extract_pagination() and 
     extract_anime_raw() for extraction and load_bronze() for bronze insertion.
@@ -50,8 +50,6 @@ def run_ingestion(startPage : int = 1):
             logger.error(f"Ingestion interupted: {e}")
             success = False
             break
-    
-    conn.close()
 
     conn.close()
     if success:
