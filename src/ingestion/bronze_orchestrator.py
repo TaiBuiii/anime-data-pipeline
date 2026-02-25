@@ -1,7 +1,7 @@
 from ingestion.jikan_client import fetch_page_data
 from utils.logger import get_logger
 from loaders.bronze_loader import load_bronze
-from ingestion.bronze_extractor import extract_anime_raw, extract_pagination
+from ingestion.bronze_ingestor import ingest_anime_raw, ingest_pagination
 import utils.db as db
 
 import json
@@ -10,8 +10,8 @@ logger = get_logger(__name__)
     
 def run_ingestion(startPage : int = 1) -> None:
     """
-    Acts as the orchestration for the extraction phase. It calls extract_pagination() and 
-    extract_anime_raw() for extraction and load_bronze() for bronze insertion.
+    Acts as the orchestration for the ingestion phase. It calls ingest_pagination() and 
+    ingest_anime_raw() for ingestion and load_bronze() for bronze insertion.
 
     Args
     startPage : the page where user want to start fetching. by default, startPage = 1
@@ -31,10 +31,10 @@ def run_ingestion(startPage : int = 1) -> None:
             data = fetch_page_data(page)
 
             # Extract a record for bronze.anime_pagination_log
-            pagination = extract_pagination(data["pagination"])
+            pagination = ingest_pagination(data["pagination"])
 
             # Extract records for bronze.anime_raw
-            anime_raw = extract_anime_raw(data["data"],page)
+            anime_raw = ingest_anime_raw(data["data"],page)
 
             # Load immediate to bronze layer when a page is fetched
             load_bronze(anime_raw, pagination, conn)

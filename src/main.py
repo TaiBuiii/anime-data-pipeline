@@ -9,4 +9,6 @@ if __name__ == "__main__":
     logger.info("================Run main.py===============")
     # run_ddl()
     # run_ingestion()
-    run_transformation()
+    silver_schema = run_transformation()
+    for df in silver_schema:
+        print(df)

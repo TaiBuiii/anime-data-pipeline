@@ -1,7 +1,7 @@
 
-def extract_pagination(data : dict) -> list:
+def ingest_pagination(data : dict) -> list:
     """
-    This function is called by run_ingestion() to extract the metadata in each page,
+    This function is called by run_ingestion() to ingest the metadata in each page,
     as a list of tuple. This returned datatype facilitates the loading process
 
     It returns data for bronze.anime_pagination_log
@@ -15,9 +15,9 @@ def extract_pagination(data : dict) -> list:
         data["items"]["per_page"],
     )]
         
-def extract_anime_raw(data : list, page : int) -> list:
+def ingest_anime_raw(data : list, page : int) -> list:
     """
-    This function is called by run_ingestion() to extract all the records,
+    This function is called by run_ingestion() to ingest all anime records,
     contained in the page, as a list of tuple. This returned datatype 
     facilitates the loading process
 
