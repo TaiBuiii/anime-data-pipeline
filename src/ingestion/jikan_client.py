@@ -31,7 +31,7 @@ def fetch_page_data(page : int = 1) -> dict:
             if response.status_code == 200:
                 return response.json()
             
-            # idle for 2 second if rate limited
+            # idle for 2 seconds if rate limited
             elif response.status_code == 429:
                 logger.warning("Rate limited. Sleeping 2s...")
                 time.sleep(2)

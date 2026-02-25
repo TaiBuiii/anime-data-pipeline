@@ -16,10 +16,13 @@ def run_ingestion(startPage : int = 1) -> None:
     Args
     startPage : the page where user want to start fetching. by default, startPage = 1
     """
-    total_record = 0
-    success = True
-    page = startPage
+    # initialize variable
+    total_record : int = 0
+    success : bool = True
+    page : int = startPage
     conn = db.get_animedw_connection()
+
+    # loop through pages to get data
     while True:
         try:
             logger.info (f"Fetching: {page}")
@@ -32,8 +35,10 @@ def run_ingestion(startPage : int = 1) -> None:
 
             # Extract records for bronze.anime_raw
             anime_raw = extract_anime_raw(data["data"],page)
+
             # Load immediate to bronze layer when a page is fetched
             load_bronze(anime_raw, pagination, conn)
+            
             # Stop when there is no page left
             has_next_page = data["pagination"]["has_next_page"]
             if not has_next_page:
