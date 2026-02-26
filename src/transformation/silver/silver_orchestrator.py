@@ -1,6 +1,6 @@
 import utils.db as db
 from utils.logger import get_logger
-from transformation.silver.silver_transformer.extractor import extractor
+from transformation.silver.silver_transformer.extractor import Extractor
 import pandas as pd
 
 logger = get_logger(__name__)
@@ -14,7 +14,7 @@ def run_transformation():
         payload = pd.read_sql(query,engine)
 
         # Extract data from bronze
-        silver_schema = extractor(payload).run_extraction()
+        silver_schema = Extractor(payload).run_extraction()
 
         # Clean Data
 

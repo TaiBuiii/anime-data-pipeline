@@ -1,7 +1,7 @@
 import pandas as pd
 from utils.logger import get_logger
 logger = get_logger(__name__)
-class extractor:
+class Extractor:
     def __init__(self, df_raw : pd.DataFrame):
         self.logger = logger
         self.logger.info("Initializing Extractor")

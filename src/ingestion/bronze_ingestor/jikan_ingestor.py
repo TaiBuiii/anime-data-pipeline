@@ -19,7 +19,6 @@ class JikanIngestor:
         self.BASE_URL = "https://api.jikan.moe/v4"
         self.URL = f"{self.BASE_URL}/anime"
         self.start_page = start_page
-        self.conn = db.get_animedw_connection()
         self.logger = logger
     
     def _fetch_page_data(self, page : int):
@@ -93,7 +92,7 @@ class JikanIngestor:
                 # Extract records for bronze.anime_raw
                 anime_raw = self._ingest_anime_raw(data["data"],page)
 
-                # Load immediate to bronze layer when a page is fetched
+                #  throw data out 
                 yield anime_raw, pagination
                 
                 # Stop when there is no page left
@@ -108,13 +107,7 @@ class JikanIngestor:
                 logger.error(f"Ingestion interupted: {e}")
                 break
 
-    def __del__(self):
-        try:
-            if hasattr(self, 'conn') and self.conn:
-                self.conn.close()
-                self.logger.info("Database connection closed by JikanIngestor")
-        except Exception as e:
-            self.logger.error(f"Failed closing database connection: {e}")
+
 
             
 
