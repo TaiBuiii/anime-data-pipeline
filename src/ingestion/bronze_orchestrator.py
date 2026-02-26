@@ -1,66 +1,7 @@
-from ingestion.jikan_client import fetch_page_data
-from utils.logger import get_logger
-from loaders.bronze_loader import load_bronze
-from ingestion.bronze_ingestor import ingest_anime_raw, ingest_pagination
-import utils.db as db
+from ingestion.bronze_ingestor.jikan_ingestor import JikanIngestor
+from loader.bronze_loader import load_bronze
 
-import json
-logger = get_logger(__name__)
-
-    
-def run_ingestion(startPage : int = 1) -> None:
-    """
-    Acts as the orchestration for the ingestion phase. It calls ingest_pagination() and 
-    ingest_anime_raw() for ingestion and load_bronze() for bronze insertion.
-
-    Args
-    startPage : the page where user want to start fetching. by default, startPage = 1
-    """
-    # initialize variable
-    total_record : int = 0
-    success : bool = True
-    page : int = startPage
-    conn = db.get_animedw_connection()
-
-    # loop through pages to get data
-    while True:
-        try:
-            logger.info (f"Fetching: {page}")
-
-            # Extract raw json from the specified page
-            data = fetch_page_data(page)
-
-            # Extract a record for bronze.anime_pagination_log
-            pagination = ingest_pagination(data["pagination"])
-
-            # Extract records for bronze.anime_raw
-            anime_raw = ingest_anime_raw(data["data"],page)
-
-            # Load immediate to bronze layer when a page is fetched
-            load_bronze(anime_raw, pagination, conn)
-            
-            # Stop when there is no page left
-            has_next_page = data["pagination"]["has_next_page"]
-            if not has_next_page:
-                logger.info("No more pages. Stopping.")
-                break
-
-            # Else keep fetching the next page
-            total_record += len(anime_raw)
-            page += 1
-            logger.info(f"Currently Inserted {total_record} rows from {page} pages")
-            logger.info("===========================================================================")
-
-        except Exception as e:
-            logger.error(f"Ingestion interupted: {e}")
-            success = False
-            break
-
-    conn.close()
-    if success:
-        logger.info("=================Load bronze completed successfully================")
-
-    else:
-        logger.warning("===============Load bronze terminated early======================")
-        
-
+def run_ingestion():
+    ingestor = JikanIngestor()
+    for anime_data, pagination_data in ingestor.run_ingestion():
+        load_bronze(anime_data, pagination_data,ingestor.conn)

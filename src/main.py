@@ -10,5 +10,5 @@ if __name__ == "__main__":
     # run_ddl()
     # run_ingestion()
     silver_schema = run_transformation()
-    for df in silver_schema:
-        print(df)
+    for key, value in silver_schema.items():
+        print(value)
