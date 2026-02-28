@@ -5,10 +5,9 @@ import atexit
 
 class BaseLoader:
     def __init__(self):
+        
         self.conn = db.get_animedw_connection()
-        self.logger = get_logger(self.__class__.__name__)
-        atexit.register(self.conn)
-    
+        self.logger = get_logger(self.__class__.__name__)    
 
     def close(self):
         try:

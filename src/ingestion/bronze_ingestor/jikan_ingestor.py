@@ -39,7 +39,8 @@ class JikanIngestor:
 
         raise Exception(f" Max retries exceeded for page {page}")
 
-    def _ingest_pagination(self, data : dict) -> list[tuple]:
+    @staticmethod
+    def _ingest_pagination(data : dict) -> list[tuple]:
         """
         This function is called by run_ingestion() to ingest the metadata in each page,
         as a list of tuple. This returned datatype facilitates the loading process
@@ -55,7 +56,8 @@ class JikanIngestor:
             data["items"]["per_page"],
         )]
         
-    def _ingest_anime_raw(self, data : list[dict], page : int) -> list[tuple]:
+    @staticmethod
+    def _ingest_anime_raw(data : list[dict], page : int) -> list[tuple]:
         """
         This function is called by run_ingestion() to ingest all anime records,
         contained in the page, as a list of tuple. This returned datatype 
