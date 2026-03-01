@@ -1,61 +1,73 @@
+CREATE TABLE IF NOT EXISTS silver.rating(
+    rating_id INT PRIMARY KEY,
+    rating_code TEXT,
+    rating_description TEXT
+);
+
+CREATE TABLE IF NOT EXISTS  silver.broadcast(
+    broadcast_id INT PRIMARY KEY,
+    broadcast_day TEXT,
+    broadcast_time TIME,
+    broadcast_timezone TEXT
+);
+
 CREATE TABLE IF NOT EXISTS silver.anime(
-    mal_id INT PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    title_english VARCHAR(255),
-    title_japanese VARCHAR(255),
-    url VARCHAR(255),
-    type VARCHAR(50),
-    source VARCHAR(50),
+    anime_mal_id INT PRIMARY KEY,
+    title TEXT NOT NULL,
+    title_english TEXT,
+    title_japanese TEXT,
+    url TEXT,
+    type TEXT,
+    source TEXT,
     episodes INT,
-    duration INT,
-    rating VARCHAR(50),
+    duration_per_ep FLOAT,
+    rating_id INT,
     score FLOAT,
     scored_by INT,
     popularity INT,
     favorites INT,
     airing BOOLEAN,
-    status VARCHAR(50),
+    status TEXT,
     aired_from TIMESTAMP, 
     aired_to TIMESTAMP,
-    season VARCHAR(20),
-    broadcast_day VARCHAR(20),
-    broadcast_time TIME,
-    broadcast_timezone VARCHAR(50)
+    season TEXT,
+    broadcast_id INT,
+    FOREIGN KEY (rating_id) REFERENCES silver.rating(rating_id),
+    FOREIGN KEY(broadcast_id) REFERENCES silver.broadcast(broadcast_id)
 );
 
-
 CREATE TABLE IF NOT EXISTS silver.organization(
-    mal_id INT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    url VARCHAR(255)
+    organization_mal_id INT PRIMARY KEY,
+    name TEXT NOT NULL,
+    url TEXT
 );
 
 CREATE TABLE IF NOT EXISTS silver.genre(
-    mal_id INT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    url VARCHAR(255)
+    genre_mal_id INT PRIMARY KEY,
+    name TEXT NOT NULL,
+    url TEXT
 );
 
 CREATE TABLE IF NOT EXISTS silver.theme(
-    mal_id INT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
-    url VARCHAR(50)
+    theme_mal_id INT PRIMARY KEY,
+    name TEXT NOT NULL,
+    url TEXT
 );
 
 CREATE TABLE IF NOT EXISTS silver.demographic(
-    mal_id INT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
-    url VARCHAR(50)
+    demographic_mal_id INT PRIMARY KEY,
+    name TEXT NOT NULL,
+    url TEXT
 );
 
 CREATE TABLE IF NOT EXISTS silver.anime_organization(
     anime_mal_id INT NOT NULL,
     organization_mal_id INT NOT NULL,
-    role VARCHAR(50), --publisher, liscensor, producer
+    role TEXT, --publisher, liscensor, producer
     
     PRIMARY KEY (anime_mal_id,organization_mal_id, role),
-    FOREIGN KEY (anime_mal_id) REFERENCES silver.anime (mal_id),
-    FOREIGN KEY (organization_mal_id) REFERENCES silver.organization (mal_id)
+    FOREIGN KEY (anime_mal_id) REFERENCES silver.anime (anime_mal_id),
+    FOREIGN KEY (organization_mal_id) REFERENCES silver.organization (organization_mal_id)
 );
 
 CREATE TABLE IF NOT EXISTS silver.anime_genre(
@@ -63,16 +75,16 @@ CREATE TABLE IF NOT EXISTS silver.anime_genre(
     genre_mal_id INT NOT NULL,
 
     PRIMARY KEY (anime_mal_id, genre_mal_id),
-    FOREIGN KEY (anime_mal_id) REFERENCES silver.anime(mal_id),
-    FOREIGN KEY (genre_mal_id) REFERENCES silver.genre(mal_id)
+    FOREIGN KEY (anime_mal_id) REFERENCES silver.anime(anime_mal_id),
+    FOREIGN KEY (genre_mal_id) REFERENCES silver.genre(genre_mal_id)
 );
 
 CREATE TABLE IF NOT EXISTS silver.anime_theme(
     anime_mal_id INT NOT NULL,
     theme_mal_id INT NOT NULL,
     PRIMARY KEY (anime_mal_id, theme_mal_id),
-    FOREIGN KEY (anime_mal_id) REFERENCES silver.anime(mal_id),
-    FOREIGN KEY (theme_mal_id) REFERENCES silver.theme(mal_id)
+    FOREIGN KEY (anime_mal_id) REFERENCES silver.anime(anime_mal_id),
+    FOREIGN KEY (theme_mal_id) REFERENCES silver.theme(theme_mal_id)
 );
 
 CREATE TABLE IF NOT EXISTS silver.anime_demographic(
@@ -80,7 +92,7 @@ CREATE TABLE IF NOT EXISTS silver.anime_demographic(
     demographic_mal_id INT NOT NULL,
     
     PRIMARY KEY (anime_mal_id, demographic_mal_id),
-    FOREIGN KEY (anime_mal_id) REFERENCES silver.anime(mal_id),
-    FOREIGN KEY (demographic_mal_id) REFERENCES silver.demographic(mal_id)
+    FOREIGN KEY (anime_mal_id) REFERENCES silver.anime(anime_mal_id),
+    FOREIGN KEY (demographic_mal_id) REFERENCES silver.demographic(demographic_mal_id)
 );
 

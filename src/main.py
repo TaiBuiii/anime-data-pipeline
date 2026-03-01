@@ -10,6 +10,5 @@ if __name__ == "__main__":
     # run_ddl()
     # run_ingestion()
     silver_schema = run_transformation()
-    print(silver_schema["df_anime_producer"])
         
     

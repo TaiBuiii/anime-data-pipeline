@@ -3,6 +3,7 @@ from utils.logger import get_logger
 from transformation.silver.silver_transformer.extractor import Extractor
 from transformation.silver.silver_transformer.cleaner import Cleaner
 from transformation.silver.silver_transformer.normalizer import Normalizer
+from loader.silver_loader import SilverLoader
 
 import pandas as pd
 
@@ -23,8 +24,14 @@ def run_transformation():
         cleaned_silver_schema = Cleaner(silver_schema).run_clean()
         # normalize
         normalized_silver_schema = Normalizer(cleaned_silver_schema).run_normalization()
+        # load silver
+        SilverLoader(normalized_silver_schema).load_silver()
+        
+
         logger.info("**Transformation Successfully**")
-        return normalized_silver_schema
+        # return normalized_silver_schema
 
     except Exception as e:
         logger.error(f"**Error running transformation: {e}**")
+    finally:
+        engine.dispose()

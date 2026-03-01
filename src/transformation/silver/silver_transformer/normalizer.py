@@ -29,8 +29,8 @@ class Normalizer:
             df_split = df_split.drop_duplicates()
             df_original = df_original.drop(columns = ["url","type","name"])
             return {
-                    f"df_anime_{prefix}": df_original,
-                    f"df_{prefix}" : df_split
+                    f"anime_{prefix}": df_original,
+                    f"{prefix}" : df_split
             }
         except Exception as e:
             logger.error(f"**Failed normalizing anime {prefix} relationship table**")
@@ -67,13 +67,22 @@ class Normalizer:
             df_anime = self._map_original_table(df_anime, df_rating, cols_rt)
             
             return {
-                "df_anime" : df_anime,
-                "df_broadcast" : df_broadcast,
-                "df_rating" : df_rating
+                "anime" : df_anime,
+                "broadcast" : df_broadcast,
+                "rating" : df_rating
             }
         except Exception as e:
             self.logger.error(f"**Failed normalizing anime table: {e}**")
             raise
+
+    def normalize_column_name(self, normalized_silver_schema: dict[str, pd.DataFrame]):
+        self.logger.info("Converting all column names to snake_case (replacing '.' with '_')")
+        try:
+            for df in normalized_silver_schema.values():
+                df.columns = [col.replace(".", "_") for col in df.columns]
+            return normalized_silver_schema
+        except Exception as e:
+            self.logger.error("Failed normalizing all column names to snake_case")
 
 
     def run_normalization(self) -> dict[str, pd.DataFrame]:
@@ -93,6 +102,7 @@ class Normalizer:
                 result = self._normalize_anime_metadata_relationship(self.cleaned_silver_schema[table_name], prefix)
                 normalized_silver_schema.update(result)
 
+            normalized_silver_schema = self.normalize_column_name(normalized_silver_schema)
 
             self.logger.info(f"**Normalizing successfully**")
             return normalized_silver_schema

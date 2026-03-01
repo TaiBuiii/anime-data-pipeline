@@ -53,11 +53,12 @@ def get_sqlalchemy_engine():
         password = os.getenv("DB_PASSWORD")
         dbname = "animedw"
         port = int(os.getenv("DB_PORT",5432))
-        conn_str = f"postgresql://{user}:{password}@{host}:{port}/{dbname}"
+        conn_str = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{dbname}"
         engine = create_engine(conn_str)
         logger.info ("Connecting to animedw Database using Alchemy successfully")
         return engine
     except Exception as e:
-        logger.info(f"Error occured: {e}")
+        logger.error(f"Error occured: {e}")
+        raise
         
 
