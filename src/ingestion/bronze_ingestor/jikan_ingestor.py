@@ -1,8 +1,7 @@
 from utils.logger import get_logger
 import utils.db as db
 
-from typing import Callable
-
+import pandas as pd
 import requests
 import time
 import json
@@ -47,14 +46,14 @@ class JikanIngestor:
 
         It returns data for bronze.anime_pagination_log
         """
-        return [(
-            data["current_page"],
-            data["last_visible_page"],
-            data["has_next_page"],
-            data["items"]["count"],
-            data["items"]["total"],
-            data["items"]["per_page"],
-        )]
+        return [{
+            "page" : data["current_page"],
+            "last_visible_page" : data["last_visible_page"],
+            "has_next_page" : data["has_next_page"],
+            "items_count" : data["items"]["count"],
+            "items_total" : data["items"]["total"],
+            "items_per_page" : data["items"]["per_page"],
+        }]
         
     @staticmethod
     def _ingest_anime_raw(data : list[dict], page : int) -> list[tuple]:
@@ -65,9 +64,11 @@ class JikanIngestor:
 
         It returns data for bronze.anime_raw
         """
-        return [
-            (record["mal_id"], page, json.dumps(record)) for record in data
-        ]
+        return [{
+            "mal_id" : record["mal_id"],
+            "page" : page, 
+            "payload" : json.dumps(record)}
+            for record in data]
     
     def run_ingestion(self):
         """
@@ -89,19 +90,19 @@ class JikanIngestor:
                 data = self._fetch_page_data(page)
 
                 # Extract a record for bronze.anime_pagination_log
-                pagination = self._ingest_pagination(data["pagination"])
+                df_anime_pagination_log = pd.DataFrame(self._ingest_pagination(data["pagination"]))
 
                 # Extract records for bronze.anime_raw
-                anime_raw = self._ingest_anime_raw(data["data"],page)
+                df_anime_raw = pd.DataFrame(self._ingest_anime_raw(data["data"],page))
 
                 #  throw data out 
-                yield anime_raw, pagination
+                yield df_anime_raw, df_anime_pagination_log
                 
                 # Stop when there is no page left
                 if not data["pagination"]["has_next_page"]:
                     logger.info("No more pages. Stopping.")
                     break
-
+                    
                 # Else keep fetching the next page
                 page += 1
 
