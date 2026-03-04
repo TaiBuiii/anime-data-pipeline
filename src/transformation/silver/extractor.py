@@ -4,10 +4,10 @@ from utils.logger import get_logger
 logger = get_logger(__name__)
 
 class Extractor:
-    def __init__(self, df_raw : pd.DataFrame):
+    def __init__(self, payload : pd.DataFrame):
         self.logger = logger
         self.logger.info("Initializing Extractor")
-        self.df_bronze = pd.json_normalize(df_raw["payload"]).rename(columns={"mal_id":"anime_mal_id"})
+        self.df_bronze = pd.json_normalize(payload["payload"]).rename(columns={"mal_id":"anime_mal_id"})
 
 
     def _extract_nested_metadata(self, prefix : str) -> pd.DataFrame:

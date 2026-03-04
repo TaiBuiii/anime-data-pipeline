@@ -4,10 +4,10 @@ This scripts creates bronze.anime_raw and bronze.anime_pagination_log
 */
 
 CREATE TABLE bronze.anime_raw(
-    mal_id INT PRIMARY KEY,
+    mal_id INT,
     page INT,
     ingestion_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    payload JSONB NOT NULL
+    payload JSONB NOT NULL,
     PRIMARY KEY (mal_id, page)
 );
 

@@ -6,12 +6,7 @@ logger = get_logger(__name__)
 class SilverLoader(BaseLoader):
     def __init__(self, db_name="animed"):
         super().__init__(db_name = db_name)
-    
-
-
-    def load_silver(self, normalized_silver_schema):        
-        try:
-            load_order =[
+        self.load_order = [
                 "broadcast",
                 "rating",
                 "anime",
@@ -24,8 +19,12 @@ class SilverLoader(BaseLoader):
                 "anime_demographic",
                 "anime_genre"
             ]
+    
 
-            for table in load_order:
+
+    def load_silver(self, normalized_silver_schema):        
+        try:
+            for table in self.load_order:
                 self.db_manager.load_table(table, "silver" , normalized_silver_schema[table])
             
         except Exception as e:

@@ -10,7 +10,7 @@ import json
 logger = get_logger(__name__)
 
 class JikanIngestor:
-    RETRY_ATTEMPTS = 5
+    RETRY_ATTEMPTS = 10
     TIMEOUT = 10
     SLEEP_TIME = 2
 
