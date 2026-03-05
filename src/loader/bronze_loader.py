@@ -4,7 +4,7 @@ from utils.logger import get_logger
 
 logger = get_logger(__name__)
 class BronzeLoader(BaseLoader):
-    def __init__(self, db_anime : str = "animed"):
+    def __init__(self, db_anime : str = "animedw"):
         super().__init__(db_name = db_anime)
 
         
@@ -14,6 +14,7 @@ class BronzeLoader(BaseLoader):
         and insert_anime_pagination_log() to perform insertion
 
         """
+    
         try:
             self.db_manager.load_table(table_name="anime_raw", schema = "bronze", df = anime_raw)
             self.db_manager.load_table(table_name="anime_pagination_log", schema = "bronze", df = anime_pagination_log)

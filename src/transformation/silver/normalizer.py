@@ -6,7 +6,6 @@ logger = get_logger(__name__)
 class Normalizer:
     def __init__(self, cleaned_silver_schema : dict[str, pd.DataFrame]):
         self.cleaned_silver_schema = cleaned_silver_schema
-        self.logger = logger
 
     @staticmethod
     def _split_table(df_original : pd.DataFrame, id_name : str, on : list[str]) -> pd.DataFrame:
@@ -22,7 +21,7 @@ class Normalizer:
         return df_original
     
     @staticmethod
-    def _normalize_anime_metadata_relationship(df_original, prefix : str) -> dict[pd.DataFrame]:
+    def _normalize_anime_metadata_relationship(df_original : pd.DataFrame, prefix : str) -> dict[pd.DataFrame]:
         logger.info(f"Normalizing anime {prefix} relationship table")
         try:
             df_split = df_original [[f"{prefix}_mal_id","name","url"]].copy()
@@ -33,7 +32,7 @@ class Normalizer:
                     f"{prefix}" : df_split
             }
         except Exception as e:
-            logger.error(f"**Failed normalizing anime {prefix} relationship table**")
+            logger.error(f"**Failed normalizing anime {prefix} relationship table: {e}**", exc_info=True)
             raise
 
     @staticmethod
@@ -49,12 +48,12 @@ class Normalizer:
 
             return {"df_anime_organization" : pd.concat(concate_list, ignore_index=True)}
         except Exception as e:
-            logger.error(f"**Failed combining organizations: {e}**")
+            logger.error(f"**Failed combining organizations: {e}**", exc_info=True)
             raise
 
 
     def _normalize_anime(self, df_anime : pd.DataFrame) -> dict[pd.DataFrame]:
-        self.logger.info("Normalizing anime table")
+        logger.info("Normalizing anime table")
         try: 
             # split Broadcast
             cols_bc = ["broadcast.day", "broadcast.time", "broadcast.timezone"]
@@ -72,21 +71,23 @@ class Normalizer:
                 "rating" : df_rating
             }
         except Exception as e:
-            self.logger.error(f"**Failed normalizing anime table: {e}**")
+            logger.error(f"**Failed normalizing anime table: {e}**", exc_info=True)
             raise
 
-    def normalize_column_name(self, normalized_silver_schema: dict[str, pd.DataFrame]):
-        self.logger.info("Converting all column names to snake_case (replacing '.' with '_')")
+    @staticmethod
+    def normalize_column_name(normalized_silver_schema: dict[str, pd.DataFrame]):
+        logger.info("Converting all column names to snake_case (replacing '.' with '_')")
         try:
             for df in normalized_silver_schema.values():
                 df.columns = [col.replace(".", "_") for col in df.columns]
             return normalized_silver_schema
         except Exception as e:
-            self.logger.error("Failed normalizing all column names to snake_case")
+            logger.error(f"Failed normalizing all column names to snake_case: {e}", exc_info=True)
+            raise
 
 
     def run_normalization(self) -> dict[str, pd.DataFrame]:
-        self.logger.info("Running Normalization process")
+        logger.info("Running Normalization process")
         try:
             normalized_silver_schema = {}
             
@@ -104,8 +105,8 @@ class Normalizer:
 
             normalized_silver_schema = self.normalize_column_name(normalized_silver_schema)
 
-            self.logger.info(f"**Normalizing successfully**")
+            logger.info(f"**Normalizing successfully**")
             return normalized_silver_schema
         except Exception as e:
-            self.logger.error(f"**Failed running normalization: {e}**")
+            logger.error(f"**Failed running normalization: {e}**", exc_info=True)
             raise

@@ -4,7 +4,7 @@ from loader.base_loader import BaseLoader
 logger = get_logger(__name__)
 
 class SilverLoader(BaseLoader):
-    def __init__(self, db_name="animedw"):
+    def __init__(self, db_name = "animedw"):
         super().__init__(db_name = db_name)
         self.load_order = [
                 "broadcast",

@@ -31,7 +31,7 @@ class Cleaner:
             return hours*60 + minutes + seconds/60
         
         except Exception as e:
-            logger.error(f"**Faile converting duration to minute: {e}**")
+            logger.error(f"**Faile converting duration to minute: {e}**",exc_info=True)
             raise
 
     @staticmethod
@@ -41,7 +41,7 @@ class Cleaner:
             rating_splits = series.str.split(" - ", n=1, expand = True)
             return rating_splits
         except Exception as e:
-            logger.error(f"**Failed Spliting rating metadata: {e}**")
+            logger.error(f"**Failed Spliting rating metadata: {e}**",exc_info=True)
             raise
 
     @staticmethod       
@@ -60,7 +60,7 @@ class Cleaner:
     def _to_datetime(s : pd.Series, format=None) -> pd.Series: 
         return pd.to_datetime(s, format=format, errors='coerce')
 
-    def parsing_anime(self, df) -> pd.DataFrame:
+    def _parsing_anime(self, df : pd.DataFrame) -> pd.DataFrame:
         # Split rating into rating code and rating description
         df[['rating_code','rating_description']] = self._split_rating(df["rating"])
         df.drop(columns = ['rating'], inplace = True)
@@ -71,7 +71,7 @@ class Cleaner:
 
         return df
 
-    def casting_anime(self, df) -> pd.DataFrame:
+    def _casting_anime(self, df) -> pd.DataFrame:
         for col in self.casting_map["int"]: df[col] = self._to_numeric(df[col], dtype='Int64')
         for col in self.casting_map["float"]: df[col] = self._to_numeric(df[col], dtype='Float64')
         for col in self.casting_map["string"]:  df[col] = self._to_string(df[col])
@@ -80,7 +80,7 @@ class Cleaner:
         for col in self.casting_map["time"] : df[col] = self._to_datetime(df[col], format='%H:%M').dt.time
         return df
     
-    def handle_incorrect_anime_data_logic(self, df) -> pd.DataFrame:
+    def _handle_incorrect_anime_data_logic(self, df) -> pd.DataFrame:
         df.loc[(df["aired.from"].notna()) & (df["aired.to"].notna()) & (df["aired.from"] > df["aired.to"]),"aired.to"] = pd.NA
         df.loc[(df["score"] > 0 )& (df["scored_by"] == 0), "score"] = 0
         df.loc[df["scored_by"] == 0, "score"] = pd.NA
@@ -88,7 +88,7 @@ class Cleaner:
         df.loc[df["status"] == "not yet aired", ["scored_by","score"]] = pd.NA
         return df
     
-    def handle_missing_anime_data(self, df) -> pd.DataFrame:
+    def _handle_missing_anime_data(self, df) -> pd.DataFrame:
         df["popularity"] = df["popularity"].fillna(0)
         df["favorites"] = df["favorites"].fillna(0)
         df["airing"] = df["airing"].fillna(False)
@@ -100,23 +100,23 @@ class Cleaner:
         try:
 
             # Parsing rating and duration
-            df = self.parsing_anime(df)
+            df = self._parsing_anime(df)
 
             # Casting datatype
-            df = self.casting_anime(df)
+            df = self._casting_anime(df)
 
             # Handle incorrect data logic
-            df = self.handle_incorrect_anime_data_logic(df)
+            df = self._handle_incorrect_anime_data_logic(df)
 
             # Handle missing data
-            df = self.handle_missing_anime_data(df)
+            df = self._handle_missing_anime_data(df)
 
             # 4. FILTER FINAL COLUMNS
             final_cols = self.casting_map["int"] + self.casting_map['float'] + self.casting_map["string"]  + self.casting_map["datetime"] + self.casting_map["time"] + self.casting_map["boolean"]
             
             return df[final_cols].drop_duplicates()
         except Exception as e:
-            self.logger.error(f"**Error cleaning anime table: {e}**")
+            self.logger.error(f"**Error cleaning anime table: {e}**",exc_info=True)
             raise
 
 
@@ -133,7 +133,7 @@ class Cleaner:
             return df.drop_duplicates()
         
         except Exception as e:
-            self.logger.info(f"**Falied cleaning {df} metadata: {e}**")
+            self.logger.error(f"**Falied cleaning {df} metadata: {e}**", exc_info=True)
             raise
     
 
@@ -151,5 +151,5 @@ class Cleaner:
             return cleaned_silver_schema
         
         except Exception as e:
-            self.logger.error(f"**Failed running clean {e}:**")
+            self.logger.error(f"**Failed running clean {e}:**",exc_info=True)
             raise

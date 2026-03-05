@@ -5,13 +5,11 @@ logger = get_logger(__name__)
 
 class Extractor:
     def __init__(self, payload : pd.DataFrame):
-        self.logger = logger
-        self.logger.info("Initializing Extractor")
         self.df_bronze = pd.json_normalize(payload["payload"]).rename(columns={"mal_id":"anime_mal_id"})
 
 
     def _extract_nested_metadata(self, prefix : str) -> pd.DataFrame:
-        self.logger.info(f"Mapping {prefix} metadata to anime")
+        logger.info(f"Mapping {prefix} metadata to anime")
 
         # Only take anime's id and column contains specified prefix's data to work, avoiding overloading RAM
         df_working = self.df_bronze[['anime_mal_id', prefix]].copy()
@@ -36,12 +34,12 @@ class Extractor:
             return pd.concat(concat_list, axis = 1)
 
         except Exception as e:
-            self.logger.error(f"**Failed mapping metadata to anime: {e}**")
+            logger.error(f"**Failed mapping metadata to anime: {e}**", exc_info=True)
             raise
     
 
-    def run_extraction(self) -> dict[pd.DataFrame]:
-        self.logger.info("Running extraction")
+    def run_extraction(self) -> dict[str,pd.DataFrame]:
+        logger.info("Running extraction")
         try:
             # Extract tables for silver_schema
             silver_schema =  {
@@ -58,9 +56,9 @@ class Extractor:
                 "df_anime_licensor" : self._extract_nested_metadata("licensors")
 
             }
-            self.logger.info("**Extracting Successfully**")
+            logger.info("**Extracting Successfully**")
             return silver_schema
 
         except Exception as e:
-            self.logger.error(f"**Failed running extraction: {e}**")
+            logger.error(f"**Failed running extraction: {e}**", exc_info=True)
             raise

@@ -108,7 +108,7 @@ class JikanIngestor:
 
             except Exception as e:
                 logger.error(f"Ingestion interupted: {e}")
-                break
+                raise
 
 
 

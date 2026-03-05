@@ -19,9 +19,6 @@ class DatabaseInitializer:
         except Exception as e:
             logger.error(f"Failed creating database: {e}", exc_info=True)
             raise
-        finally:
-            if self.postgres_manager:
-                self.postgres_manager.dispose()
 
 
     def _create_schemas(self):
@@ -32,9 +29,6 @@ class DatabaseInitializer:
         except Exception as e:
             logger.error(f"Failed creating schemas: {e}", exc_info=True)
             raise
-        finally:
-            if self.animedw_manager:
-                self.animedw_manager.dispose()
 
     
     def run_ddl(self):

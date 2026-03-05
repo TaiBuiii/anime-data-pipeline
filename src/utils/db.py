@@ -4,7 +4,7 @@ from pathlib import Path
 import os
 from utils.logger import get_logger
 import pandas as pd
-
+import atexit
 # create logger object
 logger = get_logger(__name__)
 # read environment variables from .env file
@@ -17,7 +17,7 @@ class DatabaseManager:
         self.password = os.getenv("DB_PASSWORD")
         self.dbname = dbname or os.getenv("DB_NAME", "postgres")
         self.port = int(os.getenv("DB_PORT",5432))
-
+    
         self.connection_url = f"postgresql+psycopg2://{self.user}:{self.password}@{self.host}:{self.port}/{self.dbname}"
         try:
             self._engine = create_engine(self.connection_url)
@@ -25,6 +25,7 @@ class DatabaseManager:
         except Exception as e:
             logger.error(f"Failed initializing SQLAlchemy Engine for database: {self.dbname} {self.dbname}: {e}")
             raise
+        atexit.register(self.dispose)
 
     def get_engine(self):
         return self._engine
@@ -89,5 +90,6 @@ class DatabaseManager:
                 self._engine.dispose()
             logger.info("Database engine pool disposed")
         except Exception as e:
-            logger.info(f"Failed disposing engine: {e}")
+            logger.error(f"Failed disposing engine: {e}", exc_info=True)
+            raise
 

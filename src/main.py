@@ -7,9 +7,9 @@ logger = get_logger(__name__)
 
 if __name__ == "__main__":
     logger.info("================Run main.py===============")
-    # DatabaseInitializer().run_ddl()
-    # BronzeOrchestrator().run_bronze_ingestion()
-    # SilverOrchestrator().run_silver_transformation()
+    DatabaseInitializer().run_ddl()
+    BronzeOrchestrator().run_bronze_ingestion()
+    SilverOrchestrator().run_silver_transformation()
     GoldOrchestrator().run_gold_transformation()
 
     

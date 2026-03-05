@@ -13,7 +13,7 @@ class SilverOrchestrator:
         self.silver_loader : SilverLoader = SilverLoader(db_name)
 
     def run_silver_transformation(self):
-        logger.info("running transformation")
+        logger.info("**transforming silver**")
         try:
             query = "SELECT payload FROM bronze.anime_raw"
             payload = self.silver_loader.db_manager.query_dataframe(query)
@@ -33,6 +33,6 @@ class SilverOrchestrator:
             # return normalized_silver_schema
 
         except Exception as e:
-            logger.error(f"**Error running transformation: {e}**")
-        finally:
-            self.silver_loader.close()
+            logger.error(f"**Error running transformation: {e}**", exc_info=True)
+            raise
+
