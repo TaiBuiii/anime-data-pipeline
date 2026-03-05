@@ -8,33 +8,33 @@ logger = get_logger(__name__)
 class DatabaseInitializer:
     def __init__(self):
         self.DDL_PATH = Path(__file__).resolve().parent.parent / "ddl"
+        self.postgres_manager = DatabaseManager("postgres")
+        self.animedw_manager = DatabaseManager("animedw")
 
 
     def _create_database(self):
         logger.info("Creating database animedw")
         try:
-            postgres_manager = DatabaseManager("postgres")
-            postgres_manager.execute_file(self.DDL_PATH / "01_create_database.sql", autocommit=True)
+            self.postgres_manager.execute_file(self.DDL_PATH / "01_create_database.sql", autocommit=True)
         except Exception as e:
             logger.error(f"Failed creating database: {e}", exc_info=True)
             raise
         finally:
-            if postgres_manager:
-                postgres_manager.dispose()
+            if self.postgres_manager:
+                self.postgres_manager.dispose()
 
 
     def _create_schemas(self):
         try:
-            animedw_manager = DatabaseManager("animed")
             for file in sorted(self.DDL_PATH.iterdir()):
                 if file.name != "01_create_database.sql":
-                    animedw_manager.execute_file(file)
+                    self.animedw_manager.execute_file(file)
         except Exception as e:
             logger.error(f"Failed creating schemas: {e}", exc_info=True)
             raise
         finally:
-            if animedw_manager:
-                animedw_manager.dispose()
+            if self.animedw_manager:
+                self.animedw_manager.dispose()
 
     
     def run_ddl(self):

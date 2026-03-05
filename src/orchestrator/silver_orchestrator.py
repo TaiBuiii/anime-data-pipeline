@@ -9,7 +9,7 @@ import pandas as pd
 logger = get_logger(__name__)
     
 class SilverOrchestrator:
-    def __init__(self, db_name : str = "animed"):
+    def __init__(self, db_name : str = "animedw"):
         self.silver_loader : SilverLoader = SilverLoader(db_name)
 
     def run_silver_transformation(self):
@@ -29,7 +29,7 @@ class SilverOrchestrator:
             # load silver
             self.silver_loader.load_silver(normalized_silver_schema)
             
-            logger.info("**Transformation Successfully**")
+            logger.info("**Transforming silver Successfully**")
             # return normalized_silver_schema
 
         except Exception as e:
