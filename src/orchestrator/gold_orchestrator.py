@@ -7,7 +7,7 @@ logger = get_logger(__name__)
 class GoldOrchestrator:
     def __init__(self):
         self.gold_loader = DatabaseManager("animedw")
-        self.TRANSFORM_PATH  = Path(__name__).resolve().parent.parent / "transformation" / "gold"
+        self.TRANSFORM_PATH  = Path(__file__).resolve().parent.parent / "transformation" / "gold"
     
     def run_gold_transformation(self):
         logger.info("**Transforming gold**")

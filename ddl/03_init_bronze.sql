@@ -7,12 +7,11 @@ CREATE TABLE bronze.anime_raw(
     mal_id INT,
     page INT,
     ingestion_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    payload JSONB NOT NULL,
-    PRIMARY KEY (mal_id, page)
+    payload JSONB NOT NULL
 );
 
 CREATE TABLE bronze.anime_pagination_log(
-    page INT PRIMARY KEY,
+    page INT,
     last_visible_page INT,
     has_next_page BOOLEAN,
     items_count INT,
