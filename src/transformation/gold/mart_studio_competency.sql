@@ -1,3 +1,7 @@
+/*
+Studio Competency Matrix (gold.mart_studio_competency): Evaluates animation studios based on their core genres and target demographics (rating_code), 
+measuring production quality using hit-rates (high_tier_rate for scores > 7.5) to select the most reliable production partners.
+*/
 CREATE OR REPLACE VIEW gold.mart_studio_competency AS
 
 SELECT 

@@ -9,6 +9,11 @@ import pandas as pd
 logger = get_logger(__name__)
     
 class SilverOrchestrator:
+    """
+    Orchestrates the Silver layer cleaning transformations .
+    
+    This class will extract anime data from raw JSON in bronze layer, clean the data, and ultimately normalize the data.
+    """
     def __init__(self, db_name : str = "animedw"):
         self.silver_loader : SilverLoader = SilverLoader(db_name)
 
@@ -16,7 +21,10 @@ class SilverOrchestrator:
         logger.info("**transforming silver**")
         try:
             query = "SELECT payload FROM bronze.anime_raw"
+
+            # read the data from bronze layer as DataFrame
             payload = self.silver_loader.db_manager.query_dataframe(query)
+
             # Extract data from bronze
             silver_schema = Extractor(payload).run_extraction()
 
@@ -30,7 +38,6 @@ class SilverOrchestrator:
             self.silver_loader.load_silver(normalized_silver_schema)
             
             logger.info("**Transforming silver Successfully**")
-            # return normalized_silver_schema
 
         except Exception as e:
             logger.error(f"**Error running transformation: {e}**", exc_info=True)

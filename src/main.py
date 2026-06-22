@@ -7,9 +7,17 @@ logger = get_logger(__name__)
 
 def main():
     logger.info("================Run main.py===============")
+
+    # initialize database 
     DatabaseInitializer().run_ddl()
+
+    # store raw data in bronze layer 
     BronzeOrchestrator().run_bronze_ingestion()
+
+    # perform basic data transformation 
     SilverOrchestrator().run_silver_transformation()
+
+    
     GoldOrchestrator().run_gold_transformation()
 
     

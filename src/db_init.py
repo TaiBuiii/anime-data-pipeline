@@ -13,6 +13,9 @@ class DatabaseInitializer:
 
 
     def _create_database(self):
+        """
+        This method create animedw database house
+        """
         logger.info("Creating database animedw")
         try:
             self.postgres_manager.execute_file(self.DDL_PATH / "01_create_database.sql", autocommit=True)
@@ -23,8 +26,10 @@ class DatabaseInitializer:
 
     def _create_schemas(self):
         try:
+            # short the ddl files in desceneding order
             for file in sorted(self.DDL_PATH.iterdir()):
                 if file.name != "01_create_database.sql":
+                    # execute each file  
                     self.animedw_manager.execute_file(file)
         except Exception as e:
             logger.error(f"Failed creating schemas: {e}", exc_info=True)

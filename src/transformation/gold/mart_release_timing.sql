@@ -1,3 +1,8 @@
+/*
+Broadcast Schedule Optimization (gold.release_timing): Discovers the "Prime Time" slots (day/time) that maximize high-tier viewer engagement, 
+helping scheduling teams avoid over-saturated slots and deploy strategic broadcasting.
+*/
+
 CREATE OR REPLACE VIEW gold.release_timing AS
 
 SELECT 

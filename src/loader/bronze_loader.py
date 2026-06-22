@@ -4,6 +4,9 @@ from utils.logger import get_logger
 
 logger = get_logger(__name__)
 class BronzeLoader(BaseLoader):
+    """
+    This is the loader for bronze layer, it will load anime_pagination_log, and anime data into bronze layer as raw JSON
+    """
     def __init__(self, db_anime : str = "animedw"):
         super().__init__(db_name = db_anime)
 

@@ -1,3 +1,8 @@
+/*
+Market & Genre Trends (gold.genre_trend): Identifies shifts in audience preferences and market share (%) by genre since 2000, 
+and uncovers niche genres with high fan engagement (total_favorites) despite lower production volume.
+*/
+
 CREATE OR REPLACE VIEW gold.genre_trend AS 
 
 WITH genre_yearly AS (

@@ -4,14 +4,41 @@ from utils.logger import get_logger
 logger = get_logger(__name__)
 
 class Extractor:
+    """
+    Handles the transformation and flattening of Bronze layer data into Silver layer schemas.
+    
+    This class normalizes nested JSON structures within the raw data, flattening 
+    many-to-many metadata fields (such as genres, studios, themes) into individual 
+    relational DataFrames.
+    """
     def __init__(self, payload : pd.DataFrame):
+        """
+        Initializes the Extractor by flattening the raw JSON payload.
+        """
+
+        # Normalize the main payload and standardize the primary key name
         self.df_bronze = pd.json_normalize(payload["payload"]).rename(columns={"mal_id":"anime_mal_id"})
 
 
     def _extract_nested_metadata(self, prefix : str) -> pd.DataFrame:
+        """
+        Flattens a specific nested array field (metadata) associated with each anime.
+        
+        This helper isolates an anime's ID and a specific metadata field array, 
+        explodes the array into independent rows, flattens the internal JSON objects, 
+        and reconstructs a bridge DataFrame.
+        
+        Args:
+            prefix (str): The column name representing the nested list of metadata 
+                          (e.g., 'genres', 'studios').
+                          
+        Returns:
+            pd.DataFrame: A flattened DataFrame containing 'anime_mal_id' mapped 
+                          to the metadata properties.
+        """
         logger.info(f"Mapping {prefix} metadata to anime")
 
-        # Only take anime's id and column contains specified prefix's data to work, avoiding overloading RAM
+        # Only take anime's id and column contains specified prefix's data to work
         df_working = self.df_bronze[['anime_mal_id', prefix]].copy()
         try:
 
@@ -39,6 +66,16 @@ class Extractor:
     
 
     def run_extraction(self) -> dict[str,pd.DataFrame]:
+        """
+        Transforms the unified raw Bronze dataset into a structural Silver schema dictionary.
+        
+        Extracts core anime properties alongside mapping tables for complex 
+        many-to-many relations like genres, themes, and production studios.
+        
+        Returns:
+            dict[str, pd.DataFrame]: A dictionary where keys are the Silver table names 
+                                    and values are their corresponding relational DataFrames.
+        """
         logger.info("Running extraction")
         try:
             # Extract tables for silver_schema
