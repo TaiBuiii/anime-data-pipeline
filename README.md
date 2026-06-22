@@ -1,6 +1,6 @@
 # Project Overview
 
-This project implements an ETL data pipeline that extracts anime data from the **Jikan API** (MyAnimeList). The primary goal of this project is to analyze top-rated anime based on various attributes, along with their broadcasting schedules. 
+This project implements an ETL data pipeline that extracts **real-time** anime data from the **Jikan API** (MyAnimeList). The primary goal of this project is to analyze top-rated anime based on various attributes, along with their broadcasting schedules. 
 
 The analytical views in the Gold Layer are designed to drive strategic decisions for production studios, streaming platforms, and investors:
 * **Market & Genre Trends (`gold.genre_trend`):** Identifies shifts in audience preferences and market share (%) by genre since 2000, and uncovers niche genres with high fan engagement (`total_favorites`) despite lower production volume.
