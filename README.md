@@ -1,4 +1,4 @@
-# Project Overview
+# **1. Project Overview**
 
 This project implements an ETL data pipeline that extracts **real-time** anime data from the **Jikan API** (MyAnimeList). The primary goal of this project is to analyze top-rated anime based on various attributes, along with their broadcasting schedules. 
 
@@ -11,13 +11,15 @@ The data warehouse architecture applied in this project is the **Medallion Archi
 * **Bronze Layer:** Stores raw JSON data directly extracted from the Jikan API.
 * **Silver Layer:** Transforms, cleans, and structures the data into relational tables.
 * **Gold Layer:** Aggregates and transforms data based on specific business and analytical requirements.
-
+<p align="center">
+  <img src="architecture.png" alt="Project System Architecture" width="100%">
+</p>
 # Tech Stack
 * **SQL:** Initializing databases, schemas, and DDL definitions.
 * **Python:** Transforming data using **Pandas** and connecting to PostgreSQL via **SQLAlchemy**.
 * **Docker:** Containerizing the application and database for seamless deployment.
 
-# Project Structure
+# **2. Project Structure**
 
 ```text
 anime-data-pipeline/
@@ -63,9 +65,9 @@ anime-data-pipeline/
 └── requirements.txt
 ```
 
-# Configuration and Setup
+# **3. Configuration and Setup**
 
-## Configuration 
+## **3.1 Configuration** 
 Create a `.env` file in the root directory and define the following environment variables:
 
 ```env
@@ -76,7 +78,7 @@ DB_PASSWORD=postgres
 DB_NAME=postgres
 ```
 
-## Setup & Execution
+## **3.2 Setup & Execution**
 
 1. **Start the containers:** Open your terminal in the root folder and run the following command to build and launch the services:
    ```bash
