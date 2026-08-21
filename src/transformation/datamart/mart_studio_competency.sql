@@ -1,8 +1,8 @@
 /*
-Studio Competency Matrix (gold.mart_studio_competency): Evaluates animation studios based on their core genres and target demographics (rating_code), 
+Studio Competency Matrix (datamart.mart_studio_competency): Evaluates animation studios based on their core genres and target demographics (rating_code), 
 measuring production quality using hit-rates (high_tier_rate for scores > 7.5) to select the most reliable production partners.
 */
-CREATE OR REPLACE VIEW gold.mart_studio_competency AS
+CREATE OR REPLACE VIEW datamart.mart_studio_competency AS
 
 SELECT 
     g.name AS genre_name,
@@ -14,16 +14,16 @@ SELECT
     ROUND(COUNT(CASE WHEN a.score > 6.5 AND a.score <= 7.5  THEN 1 END) * 100.0 / COUNT(a.anime_mal_id), 2) AS mid_tier_rate,
     SUM(a.favorites) AS total_member,
     ROUND(AVG(a.favorites), 0) AS avg_favorites_per_anime
-FROM silver.anime a
-INNER JOIN silver.anime_genre ag
+FROM edw.anime a
+INNER JOIN edw.anime_genre ag
     ON ag.anime_mal_id = a.anime_mal_id
-INNER JOIN silver.genre g
+INNER JOIN edw.genre g
     ON ag.genre_mal_id = g.genre_mal_id
-INNER JOIN silver.rating r
+INNER JOIN edw.rating r
     ON r.rating_id = a.rating_id
-INNER JOIN silver.anime_organization ao  
+INNER JOIN edw.anime_organization ao  
     ON ao.anime_mal_id = a.anime_mal_id
-INNER JOIN silver.organization o 
+INNER JOIN edw.organization o 
     ON o.organization_mal_id = ao.organization_mal_id
 WHERE ao."role" = 'studio'
 GROUP BY g.name, o.name, r.rating_code

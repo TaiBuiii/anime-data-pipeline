@@ -8,20 +8,20 @@ class Cleaner:
     """
     Performs data cleaning, type casting, and Data Quality enforcement.
     
-    This class is responsible for refining the Silver layer data by parsing complex 
+    This class is responsible for refining the edw layer data by parsing complex 
     strings, normalizing duration strings into minutes, enforcing explicit Pandas 
     nullable data types, and correcting business logic contradictions for both 
     Anime records and Metadata lookups.
     """
-    def __init__(self, silver_schema: dict[pd.DataFrame]):
+    def __init__(self, edw_schema: dict[pd.DataFrame]):
         """
-        Initializes the Cleaner with the Silver schema and casting rules.
+        Initializes the Cleaner with the edw schema and casting rules.
         
         Args:
-            silver_schema (dict[str, pd.DataFrame]): A dictionary mapping table names 
-                                                     to their respective Silver DataFrames.
+            edw_schema (dict[str, pd.DataFrame]): A dictionary mapping table names 
+                                                     to their respective edw DataFrames.
         """
-        self.silver_schema = silver_schema
+        self.edw_schema = edw_schema
         self.logger = logger
 
         # Defines target columns belonging to each explicit data type category
@@ -167,7 +167,7 @@ class Cleaner:
         """Applies the comprehensive parsing, casting, and rule-checking pipeline for the main Anime entity.
         
         Args:
-            df (pd.DataFrame): The raw input Silver DataFrame for Anime records.
+            df (pd.DataFrame): The raw input edw DataFrame for Anime records.
             
         Returns:
             pd.DataFrame: A highly standardized, structurally checked, and deduplicated DataFrame.
@@ -227,7 +227,7 @@ class Cleaner:
 
     def run_clean(self) -> dict[str, pd.DataFrame]:
         """
-        Orchestrates and triggers the execution of data cleansing across the complete Silver dataset.
+        Orchestrates and triggers the execution of data cleansing across the complete edw dataset.
         
         Identifies dataset context dynamically via schema keys, applying isolated cleansing 
         tracks for either the structural Anime hub or companion categorical metadata arrays.
@@ -237,16 +237,16 @@ class Cleaner:
                                     
         """
         self.logger.info("Running clean")
-        cleaned_silver_schema = {}
+        cleaned_edw_schema = {}
         try: 
-            for key, df in self.silver_schema.items():
+            for key, df in self.edw_schema.items():
                 self.logger.info(f"Cleaning {key} dataframe")
                 if key == "df_anime":
-                    cleaned_silver_schema[key] = self._clean_anime_table(df)
+                    cleaned_edw_schema[key] = self._clean_anime_table(df)
                 else:
-                    cleaned_silver_schema[key] = self._clean_metadata_table(df)
+                    cleaned_edw_schema[key] = self._clean_metadata_table(df)
             self.logger.info("**Cleaning successfully**")
-            return cleaned_silver_schema
+            return cleaned_edw_schema
         
         except Exception as e:
             self.logger.error(f"**Failed running clean {e}:**",exc_info=True)

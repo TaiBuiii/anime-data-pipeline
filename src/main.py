@@ -1,8 +1,8 @@
 from utils.logger import get_logger
 from db_init import DatabaseInitializer
-from orchestrator.bronze_orchestrator import BronzeOrchestrator
-from orchestrator.silver_orchestrator import SilverOrchestrator
-from orchestrator.gold_orchestrator import GoldOrchestrator
+from orchestrator.stage_orchestrator import StageOrchestrator
+from orchestrator.edw_orchestrator import EdwOrchestrator
+from orchestrator.datamart_orchestrator import DataMartOrchestrator
 logger = get_logger(__name__)
 
 def main():
@@ -11,14 +11,14 @@ def main():
     # initialize database 
     DatabaseInitializer().run_ddl()
 
-    # store raw data in bronze layer 
-    BronzeOrchestrator().run_bronze_ingestion()
+    # store raw data in stage layer 
+    StageOrchestrator().run_stage_ingestion()
 
     # perform basic data transformation 
-    SilverOrchestrator().run_silver_transformation()
+    EdwOrchestrator().run_edw_transformation()
 
     
-    GoldOrchestrator().run_gold_transformation()
+    DataMartOrchestrator().run_datamart_transformation()
 
     
 if __name__ == "__main__":

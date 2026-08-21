@@ -5,7 +5,7 @@ logger = get_logger(__name__)
 
 class Extractor:
     """
-    Handles the transformation and flattening of Bronze layer data into Silver layer schemas.
+    Handles the transformation and flattening of stage layer data into edw layer schemas.
     
     This class normalizes nested JSON structures within the raw data, flattening 
     many-to-many metadata fields (such as genres, studios, themes) into individual 
@@ -17,7 +17,7 @@ class Extractor:
         """
 
         # Normalize the main payload and standardize the primary key name
-        self.df_bronze = pd.json_normalize(payload["payload"]).rename(columns={"mal_id":"anime_mal_id"})
+        self.df_stage = pd.json_normalize(payload["payload"]).rename(columns={"mal_id":"anime_mal_id"})
 
 
     def _extract_nested_metadata(self, prefix : str) -> pd.DataFrame:
@@ -39,7 +39,7 @@ class Extractor:
         logger.info(f"Mapping {prefix} metadata to anime")
 
         # Only take anime's id and column contains specified prefix's data to work
-        df_working = self.df_bronze[['anime_mal_id', prefix]].copy()
+        df_working = self.df_stage[['anime_mal_id', prefix]].copy()
         try:
 
             # Explode anime that have multiple prefix values into records
@@ -67,22 +67,22 @@ class Extractor:
 
     def run_extraction(self) -> dict[str,pd.DataFrame]:
         """
-        Transforms the unified raw Bronze dataset into a structural Silver schema dictionary.
+        Transforms the unified raw stage dataset into a structural edw schema dictionary.
         
         Extracts core anime properties alongside mapping tables for complex 
         many-to-many relations like genres, themes, and production studios.
         
         Returns:
-            dict[str, pd.DataFrame]: A dictionary where keys are the Silver table names 
+            dict[str, pd.DataFrame]: A dictionary where keys are the edw table names 
                                     and values are their corresponding relational DataFrames.
         """
         logger.info("Running extraction")
         try:
-            # Extract tables for silver_schema
-            silver_schema =  {
+            # Extract tables for edw_schema
+            stage_schema =  {
 
                 # Extract anime core information
-                "df_anime" : self.df_bronze,
+                "df_anime" : self.df_stage,
 
                 # Handle many-to-many relationship
                 "df_anime_genre" : self._extract_nested_metadata("genres"),
@@ -94,7 +94,7 @@ class Extractor:
 
             }
             logger.info("**Extracting Successfully**")
-            return silver_schema
+            return stage_schema
 
         except Exception as e:
             logger.error(f"**Failed running extraction: {e}**", exc_info=True)

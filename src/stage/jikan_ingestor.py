@@ -44,7 +44,7 @@ class JikanIngestor:
         This function is called by run_ingestion() to ingest the metadata in each page,
         as a list of tuple. This returned datatype facilitates the loading process
 
-        It returns data for bronze.anime_pagination_log
+        It returns data for stage.anime_pagination_log
         """
         return [{
             "page" : data["current_page"],
@@ -62,7 +62,7 @@ class JikanIngestor:
         contained in the page, as a list of tuple. This returned datatype 
         facilitates the loading process
 
-        It returns data for bronze.anime_raw
+        It returns data for stage.anime_raw
         """
         return [{
             "mal_id" : record["mal_id"],
@@ -89,10 +89,10 @@ class JikanIngestor:
                 # Extract raw json from the specified page
                 data = self._fetch_page_data(page)
 
-                # Extract a record for bronze.anime_pagination_log
+                # Extract a record for stage.anime_pagination_log
                 df_anime_pagination_log = pd.DataFrame(self._ingest_pagination(data["pagination"]))
 
-                # Extract records for bronze.anime_raw
+                # Extract records for stage.anime_raw
                 df_anime_raw = pd.DataFrame(self._ingest_anime_raw(data["data"],page))
 
                 #  throw data out 

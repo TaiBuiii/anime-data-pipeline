@@ -1,9 +1,9 @@
 /*
-Broadcast Schedule Optimization (gold.release_timing): Discovers the "Prime Time" slots (day/time) that maximize high-tier viewer engagement, 
+Broadcast Schedule Optimization (datamart.release_timing): Discovers the "Prime Time" slots (day/time) that maximize high-tier viewer engagement, 
 helping scheduling teams avoid over-saturated slots and deploy strategic broadcasting.
 */
 
-CREATE OR REPLACE VIEW gold.release_timing AS
+CREATE OR REPLACE VIEW datamart.release_timing AS
 
 SELECT 
     b.broadcast_day,
@@ -16,8 +16,8 @@ SELECT
         2
     ) AS high_engagement_rate
     
-FROM silver.anime a
-INNER JOIN silver.broadcast b 
+FROM edw.anime a
+INNER JOIN edw.broadcast b 
     ON a.broadcast_id = b.broadcast_id
 WHERE b.broadcast_day IS NOT NULL 
     AND b.broadcast_time IS NOT NULL 

@@ -1,9 +1,9 @@
 /*
-Market & Genre Trends (gold.genre_trend): Identifies shifts in audience preferences and market share (%) by genre since 2000, 
+Market & Genre Trends (datamart.genre_trend): Identifies shifts in audience preferences and market share (%) by genre since 2000, 
 and uncovers niche genres with high fan engagement (total_favorites) despite lower production volume.
 */
 
-CREATE OR REPLACE VIEW gold.genre_trend AS 
+CREATE OR REPLACE VIEW datamart.genre_trend AS 
 
 WITH genre_yearly AS (
   SELECT 
@@ -12,10 +12,10 @@ WITH genre_yearly AS (
       COUNT(a.anime_mal_id) AS total_anime_genre,
       ROUND(AVG(a.score)::NUMERIC,2) AS avg_score,
       SUM(a.favorites) AS total_favorites
-  FROM silver.anime a
-  INNER JOIN silver.anime_genre ag
+  FROM edw.anime a
+  INNER JOIN edw.anime_genre ag
       ON a.anime_mal_id = ag.anime_mal_id
-  INNER JOIN silver.genre g
+  INNER JOIN edw.genre g
       ON ag.genre_mal_id = g.genre_mal_id
   WHERE a.aired_from IS NOT NULL AND a.score IS NOT NULL
   GROUP BY g.name, EXTRACT(YEAR FROM a.aired_from)

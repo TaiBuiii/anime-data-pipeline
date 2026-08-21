@@ -1,6 +1,5 @@
 
 from pathlib import Path
-import psycopg2
 from utils.db import DatabaseManager
 from utils.logger import get_logger
 
@@ -24,7 +23,7 @@ class DatabaseInitializer:
             raise
 
 
-    def _create_schemas(self):
+    def _create_schema(self):
         try:
             # short the ddl files in desceneding order
             for file in sorted(self.DDL_PATH.iterdir()):
@@ -41,7 +40,7 @@ class DatabaseInitializer:
         self._create_database()
 
         # Step 2: Connect to animedw and execute remaining DDL scripts
-        self._create_schemas()
+        self._create_schema()
 
 
         

@@ -5,21 +5,21 @@ logger = get_logger(__name__)
 
 class Normalizer:
     """
-    Handles the relational normalization of data frames moving into the final Silver layer.
+    Handles the relational normalization of data frames moving into the final edw layer.
     
-    This class enforces clean Star Schema database rules by:
+    This class enforces clean 3NF database rules by:
     - Splitting repeating attributes into separate dimension tables with auto-incrementing Surrogate Keys.
     - Consolidating uniform organizational structures (producers, studios, licensors) into a single unified schema.
     """
-    def __init__(self, cleaned_silver_schema : dict[str, pd.DataFrame]):
+    def __init__(self, cleaned_edw_schema : dict[str, pd.DataFrame]):
         """
-        Initializes the Normalizer with pre-cleaned Silver layer data.
+        Initializes the Normalizer with pre-cleaned edw layer data.
         
         Args:
-            cleaned_silver_schema (dict[str, pd.DataFrame]): A dictionary mapping schema table names 
+            cleaned_edw_schema (dict[str, pd.DataFrame]): A dictionary mapping schema table names 
                                                              to their respective cleaned DataFrames.
         """
-        self.cleaned_silver_schema = cleaned_silver_schema
+        self.cleaned_edw_schema = cleaned_edw_schema
 
     @staticmethod
     def _split_table(df_original : pd.DataFrame, id_name : str, on : list[str]) -> pd.DataFrame:
@@ -85,11 +85,11 @@ class Normalizer:
             raise
 
     @staticmethod
-    def _combine_organizations(cleaned_silver_schema : dict[str,pd.DataFrame], organizations : list[str]):
+    def _combine_organizations(cleaned_edw_schema : dict[str,pd.DataFrame], organizations : list[str]):
         """Combines multiple separate company entities into a unified organizational table using role flags (Producers, Studios, and Licensors).
         
         Args:
-            cleaned_silver_schema (dict[str, pd.DataFrame]): Dictionary containing active schema DataFrames.
+            cleaned_edw_schema (dict[str, pd.DataFrame]): Dictionary containing active schema DataFrames.
             organizations (list[str]): Names of the target organization categories to bundle together.
             
         Returns:
@@ -99,7 +99,7 @@ class Normalizer:
         try:
             concate_list = []
             for organization in organizations:
-                df_anime_organization = cleaned_silver_schema[f"df_anime_{organization}"].copy()
+                df_anime_organization = cleaned_edw_schema[f"df_anime_{organization}"].copy()
 
                 # Standardize category explicit IDs to a shared 'organization_mal_id'
                 df_anime_organization.rename(columns = {f"{organization}_mal_id":"organization_mal_id"}, inplace=True)
@@ -149,7 +149,7 @@ class Normalizer:
             raise
 
     @staticmethod
-    def normalize_column_name(normalized_silver_schema: dict[str, pd.DataFrame]):
+    def normalize_column_name(normalized_edw_schema: dict[str, pd.DataFrame]):
         """
         Standardizes all columns by replacing object dot notation accessors with valid relational snake_case.
         
@@ -157,7 +157,7 @@ class Normalizer:
         query syntax failures.
         
         Args:
-            normalized_silver_schema (dict[str, pd.DataFrame]): Dictionary containing normalized active tables.
+            normalized_edw_schema (dict[str, pd.DataFrame]): Dictionary containing normalized active tables.
             
         Returns:
             dict[str, pd.DataFrame]: Updated schema data containing corrected snake_case structural headings.
@@ -165,9 +165,9 @@ class Normalizer:
         """
         logger.info("Converting all column names to snake_case (replacing '.' with '_')")
         try:
-            for df in normalized_silver_schema.values():
+            for df in normalized_edw_schema.values():
                 df.columns = [col.replace(".", "_") for col in df.columns]
-            return normalized_silver_schema
+            return normalized_edw_schema
         except Exception as e:
             logger.error(f"Failed normalizing all column names to snake_case: {e}", exc_info=True)
             raise
@@ -181,32 +181,32 @@ class Normalizer:
         bridge tables, and converts overall schema properties into standard database design conventions.
         
         Returns:
-            dict[str, pd.DataFrame]: The complete normalized schema layout map ready for Silver target loading.
+            dict[str, pd.DataFrame]: The complete normalized schema layout map ready for edw target loading.
         """
         logger.info("Running Normalization process")
         try:
-            normalized_silver_schema = {}
+            normalized_edw_schema = {}
             
             # Step 1: Standardize organizational elements into a unified table representation
-            df_anime_organization = self._combine_organizations(self.cleaned_silver_schema, ["producer", "studio", "licensor"])
-            self.cleaned_silver_schema.update(df_anime_organization)
+            df_anime_organization = self._combine_organizations(self.cleaned_edw_schema, ["producer", "studio", "licensor"])
+            self.cleaned_edw_schema.update(df_anime_organization)
 
             # Step 2: Separate multi-attribute inside the main Anime structure
-            if "df_anime" in self.cleaned_silver_schema:
-                result = self._normalize_anime(self.cleaned_silver_schema["df_anime"])
-                normalized_silver_schema.update(result)
+            if "df_anime" in self.cleaned_edw_schema:
+                result = self._normalize_anime(self.cleaned_edw_schema["df_anime"])
+                normalized_edw_schema.update(result)
             
             # Step 3: Normalize relational many-to-many bridge frameworks
             for table_name in ["df_anime_theme","df_anime_demographic","df_anime_genre", "df_anime_organization"]:
                 prefix = table_name.replace("df_anime_", "")  
-                result = self._normalize_anime_metadata_relationship(self.cleaned_silver_schema[table_name], prefix)
-                normalized_silver_schema.update(result)
+                result = self._normalize_anime_metadata_relationship(self.cleaned_edw_schema[table_name], prefix)
+                normalized_edw_schema.update(result)
 
             # Step 4: Convert nested structural attributes (dot notations) safely into snake_case headings
-            normalized_silver_schema = self.normalize_column_name(normalized_silver_schema)
+            normalized_edw_schema = self.normalize_column_name(normalized_edw_schema)
 
             logger.info(f"**Normalizing successfully**")
-            return normalized_silver_schema
+            return normalized_edw_schema
         except Exception as e:
             logger.error(f"**Failed running normalization: {e}**", exc_info=True)
             raise
